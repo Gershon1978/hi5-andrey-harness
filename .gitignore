@@ -1,0 +1,19 @@
+# deps / build output
+node_modules
+dist
+
+# secrets — this repo is PUBLIC. The real token lives only in .env (local) or AI Studio Secrets.
+.env
+.env.local
+
+# the SQLite store (created at runtime)
+*.db
+*.db-wal
+*.db-shm
+
+# debug logs from local runs
+_*.log
+_build.log
+_srv.log
+_install.log
+
