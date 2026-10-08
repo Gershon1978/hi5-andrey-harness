@@ -75,8 +75,61 @@ export const HarnessAPI = {
     return res.json();
   },
 
+  async getRunById(id: string) {
+    const res = await fetch(`/api/harness/runs/${id}`);
+    if (!res.ok) return null;
+    return res.json() as Promise<TestRunRecord>;
+  },
+
+  async getBatches() {
+    const res = await fetch('/api/harness/batches');
+    return res.json();
+  },
+
+  async startBatch(
+    costCapRub: number,
+    manifest: any[] | string,
+    onEvent: (event: any) => void,
+    signal?: AbortSignal
+  ) {
+    const res = await fetch('/api/harness/batch/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cost_cap_rub: costCapRub, manifest }),
+      signal,
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Ошибка запуска батча: ${res.status} — ${err}`);
+    }
+
+    if (!res.body) return;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(trimmed.slice(6));
+            onEvent(data);
+          } catch {}
+        }
+      }
+    }
+  },
+
   async getCalibration() {
     const res = await fetch('/api/harness/analytics/calibration');
-    return res.json() as Promise<{ range: string; min: number; max: number; total: number; correct: number }[]>;
+    return res.json() as Promise<{ range: string; min: number; max: number; n: number; total: number; correct: number; success_rate: number }[]>;
   }
 };

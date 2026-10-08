@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import { DatabaseSync } from 'node:sqlite';
 import path from 'path';
 import fs from 'fs';
 
@@ -8,10 +8,10 @@ if (!fs.existsSync(storageDir)) {
 }
 
 const dbPath = path.join(storageDir, 'harness.db');
-export const db = new Database(dbPath);
+export const db = new DatabaseSync(dbPath);
 
-db.pragma('journal_mode = WAL');
-db.pragma('synchronous = NORMAL');
+db.exec('PRAGMA journal_mode = WAL;');
+db.exec('PRAGMA synchronous = NORMAL;');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS runs (

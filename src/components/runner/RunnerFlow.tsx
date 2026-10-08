@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { HarnessAPI } from '../../api/client';
 import { StepName, AndreyVerdictResponse, TestRunRecord } from '../../types/harness';
 import { RawJsonViewer } from './RawJsonViewer';
-import { AlertTriangle, Clock, Upload, CheckCircle2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Upload, CheckCircle2, RefreshCw } from 'lucide-react';
 
 const MAX_SECONDS = 18;
 const MAX_MB = 40;
@@ -16,6 +16,7 @@ export const RunnerFlow: React.FC<{ onRunSaved: () => void; activePreset?: any }
 
   const [passportFile, setPassportFile] = useState<File | null>(null);
   const [passportDuration, setPassportDuration] = useState(0);
+  const [passportLatency, setPassportLatency] = useState(0);
   const [faultFile, setFaultFile] = useState<File | null>(null);
   const [faultDuration, setFaultDuration] = useState(0);
 
@@ -66,13 +67,15 @@ export const RunnerFlow: React.FC<{ onRunSaved: () => void; activePreset?: any }
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > MAX_MB * 1024 * 1024) {
-      alert(`Внимание! Размер файла ${(file.size / (1024 * 1024)).toFixed(1)} МБ превышает лимит ${MAX_MB} МБ!`);
+      setErrorMessage(`Внимание! Размер файла ${(file.size / (1024 * 1024)).toFixed(1)} МБ превышает лимит ${MAX_MB} МБ!`);
+    } else {
+      setErrorMessage(null);
     }
     setPassportFile(file);
     inspectVideo(file, (d) => {
       setPassportDuration(d);
       if (d > MAX_SECONDS) {
-        alert(`Внимание! Длина видео ${d.toFixed(1)} с превышает жесткий лимит ${MAX_SECONDS} с!`);
+        setErrorMessage(`Внимание! Длина видео ${d.toFixed(1)} с превышает жесткий лимит ${MAX_SECONDS} с!`);
       }
     });
   };
@@ -81,7 +84,9 @@ export const RunnerFlow: React.FC<{ onRunSaved: () => void; activePreset?: any }
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > MAX_MB * 1024 * 1024) {
-      alert(`Размер файла ${(file.size / (1024 * 1024)).toFixed(1)} МБ превышает лимит ${MAX_MB} МБ!`);
+      setErrorMessage(`Размер файла ${(file.size / (1024 * 1024)).toFixed(1)} МБ превышает лимит ${MAX_MB} МБ!`);
+    } else {
+      setErrorMessage(null);
     }
     setFaultFile(file);
     inspectVideo(file, (d) => setFaultDuration(d));
@@ -100,6 +105,7 @@ export const RunnerFlow: React.FC<{ onRunSaved: () => void; activePreset?: any }
     const t0 = Date.now();
     const res = await HarnessAPI.postPassport(passportFile, modelInput);
     const latency = Date.now() - t0;
+    setPassportLatency(latency);
     setIsLoading(false);
 
     setRawPassport(res.rawText);
@@ -198,6 +204,7 @@ export const RunnerFlow: React.FC<{ onRunSaved: () => void; activePreset?: any }
       workshop_price_text: finalVerdict.workshop?.price_text,
       required_parts: JSON.stringify(finalVerdict.required_parts || []),
       fit_constraints: JSON.stringify(finalVerdict.fit_constraints || []),
+      latency_passport_ms: passportLatency,
       latency_flow_ms: latencyFlow,
       cost_rub_estimated: costRub,
     };

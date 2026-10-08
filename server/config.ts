@@ -1,5 +1,5 @@
 export const CONFIG = {
-  PORT: Number(process.env.PORT || 3001),
+  PORT: Number(process.env.SERVER_PORT || 3001),
   ANDREY_BASE: (process.env.ANDREY_BASE || '').replace(/\/+$/, ''),
   ANDREY_TOKEN: process.env.ANDREY_TOKEN || '',
   MAX_VIDEO_SECONDS: 18,

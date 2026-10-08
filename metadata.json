@@ -1,0 +1,5 @@
+{
+  "name": "Andrey Test Harness",
+  "description": "Тестовый стенд и калибровка шлюза для сервиса Андрей",
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

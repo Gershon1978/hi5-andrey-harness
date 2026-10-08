@@ -4,11 +4,12 @@ import { ReviewQueue } from './components/review/ReviewQueue';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
 import { BatchManager } from './components/batch/BatchManager';
 import { AdversarialGrid } from './components/presets/AdversarialGrid';
+import { RunComparator } from './components/comparator/RunComparator';
 import { HarnessAPI } from './api/client';
-import { Activity, ClipboardList, BarChart2, Layers, ShieldAlert, Cpu } from 'lucide-react';
+import { Activity, ClipboardList, BarChart2, Layers, ShieldAlert, Cpu, GitCompare } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'RUNNER' | 'REVIEW' | 'ANALYTICS' | 'BATCH' | 'PRESETS'>('RUNNER');
+  const [activeTab, setActiveTab] = useState<'RUNNER' | 'REVIEW' | 'ANALYTICS' | 'BATCH' | 'PRESETS' | 'COMPARATOR'>('RUNNER');
   const [activePreset, setActivePreset] = useState<any>(null);
   const [isBrainAlive, setIsBrainAlive] = useState<boolean | null>(null);
   const [liveLedgerRub, setLiveLedgerRub] = useState<number | null>(null);
@@ -84,6 +85,9 @@ export const App: React.FC = () => {
         <button className={`nav-item ${activeTab === 'BATCH' ? 'active' : ''}`} onClick={() => setActiveTab('BATCH')}>
           <Layers size={16} /> Пакетный Eval
         </button>
+        <button className={`nav-item ${activeTab === 'COMPARATOR' ? 'active' : ''}`} onClick={() => setActiveTab('COMPARATOR')}>
+          <GitCompare size={16} /> Сравнение
+        </button>
       </nav>
 
       {/* Основная рабочая область */}
@@ -95,6 +99,7 @@ export const App: React.FC = () => {
         {activeTab === 'ANALYTICS' && <AnalyticsView />}
         {activeTab === 'PRESETS' && <AdversarialGrid onSelectPreset={handleSelectPreset} />}
         {activeTab === 'BATCH' && <BatchManager />}
+        {activeTab === 'COMPARATOR' && <RunComparator />}
       </main>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HarnessAPI } from '../../api/client';
 import { TestRunRecord } from '../../types/harness';
-import { BarChart3, ShieldAlert, DollarSign, Download } from 'lucide-react';
+import { BarChart3, Download } from 'lucide-react';
 
 export const AnalyticsView: React.FC = () => {
   const [runs, setRuns] = useState<TestRunRecord[]>([]);

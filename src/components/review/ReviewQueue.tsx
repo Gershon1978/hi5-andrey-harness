@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HarnessAPI } from '../../api/client';
 import { TestRunRecord } from '../../types/harness';
-import { Check, X, HelpCircle, AlertOctagon, MessageSquare } from 'lucide-react';
+import { Check, X, HelpCircle, AlertOctagon } from 'lucide-react';
 
 export const ReviewQueue: React.FC = () => {
   const [runs, setRuns] = useState<TestRunRecord[]>([]);

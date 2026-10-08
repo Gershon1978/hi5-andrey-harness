@@ -39,6 +39,12 @@ export interface TestRunRecord {
   tester_name: string;
   session_label?: string;
   adversarial_tag?: string;
+  passport_file_hash?: string;
+  passport_duration?: number;
+  passport_bytes?: number;
+  fault_file_hash?: string;
+  fault_duration?: number;
+  fault_bytes?: number;
   input_symptom: string;
   input_model: string;
   raw_passport_json?: string;
