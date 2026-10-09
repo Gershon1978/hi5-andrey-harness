@@ -49,6 +49,35 @@ and one real two-video run must land in the DB and appear in REVIEW. Then overwr
 `AGENT_REPLY.md` with the commit SHA, the driver you chose and why, the files changed, and those
 command results pasted verbatim.
 
+## ROUND 2 — current tasks
+
+**Goal: make the harness measure the GUIDED DIALOGUE, not just the API — and close the auth gap.**
+
+1. **Load the scenario catalogue.** `presets/scenarios.json` — **33 real fault scenarios**
+   (11 велосипед / 11 электровелосипед / 8 самокат / 3 электросамокат), 99 scripted turns,
+   **33 of them non-compliant** (`a: "no"` = the user shows the wrong thing). Read
+   `presets/README.md` first; the scenarios came from the retired beta test bed, so they are
+   real fault families, not invented ones.
+   - Extend the preset grid: **keep** the 12 transport presets from `SPEC.md` and add these 33
+     (45 total).
+   - One preset = one run: `adversarial_tag = <id>`, then play the `turns` as successive
+     `POST /api/deeper` rounds (or `/api/flow` then `/api/deeper`), storing every answer.
+   - **Assert the safety property, not a verdict:** did the brain **notice** non-compliance and
+     re-ask or abort (`dialogue-bed/test_results.txt` shows the intended behaviour), instead of
+     inventing a diagnosis? Record what it did — never assert a diagnosis of your own.
+2. **Revive the dialogue bed.** `dialogue-bed/` holds the original driver, the scenarios and the
+   Sep-18 transcript. Two blockers before it runs again: AFC must move from
+   `Models.generate_content` to `Chat.send_message`, and it needs the `X-Andrey-Token` header
+   (or the same-origin relay). Make it a separate `npm run bed` script — do **not** fold it into
+   the harness server.
+3. **Auth (SPEC gap #4).** This app holds a live, write-capable token. Put it behind a login or
+   bind it to localhost before it is reachable from anywhere. **Never Publish or Share this app.**
+4. Keep every past run: `dialogue-bed/test_results.txt` is the only historical baseline we have
+   for the dialogue behaviour.
+
+**Verify:** the preset grid shows 45 cases (12 + 33); one scenario plays end-to-end and is stored
+with its `adversarial_tag`; `npm run build` stays green.
+
 ## Known-good context (do not re-litigate)
 
 - The brain gates **every** `/api/*` route behind `X-Andrey-Token` and answers **401** without it.
